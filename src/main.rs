@@ -1,8 +1,17 @@
 use std::process::{Command,Stdio};
-use std::path::Path;
 use std::string::String;
 use std::process::ExitStatus;
 use std::io;
+
+
+macro_rules! cmd {
+    ( $x:expr, $y:tt) => {
+        {   
+            Command::new($x)
+                .args(&$y)
+        }
+    };
+}
 
 trait Updater{
     fn download(&self) -> io::Result<ExitStatus>;
@@ -23,25 +32,12 @@ impl CodeUpdater {
 impl Updater for CodeUpdater{
 
     fn download(&self) -> io::Result<ExitStatus>{
-        Command::new("wget")
-            .stdin(Stdio::inherit())
-            .stdout(Stdio::inherit())
-            .arg("https://go.microsoft.com/fwlink/?LinkID=760866")
-            .arg("-O")
-            //.arg("/dev/null")
-            .arg(&self.pathname)
+        cmd!("wget", ["https://go.microsoft.com/fwlink/?LinkID=760866", "-O", &self.pathname])
             .status()
     }
 
     fn install(&self) -> io::Result<ExitStatus>{ 
-        Command::new("sudo")
-            .stdin(Stdio::inherit())
-            .stdout(Stdio::inherit())
-            .arg("--")
-            .arg("dnf")
-            .arg("install")
-            .arg("-y")
-            .arg(&self.pathname)
+        cmd!("sudo", ["dnf", "install", "-y", &self.pathname])
             .status()
     }
 }
