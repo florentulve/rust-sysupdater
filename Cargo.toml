@@ -1,5 +1,5 @@
 [package]
-name = "code-insiders-updater"
+name = "sysupdater"
 version = "0.1.0"
 authors = ["Flo <florent.ulve@gmail.com>"]
 edition = "2018"
