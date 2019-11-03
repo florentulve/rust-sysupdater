@@ -7,15 +7,34 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'code-insiders-updater'",
+            "name": "Debug unit tests in library 'sysupdater_lib'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=sysupdater"
+                ],
+                "filter": {
+                    "name": "sysupdater_lib",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'sysupdater'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=code-insiders-updater",
-                    "--package=code-insiders-updater"
+                    "--bin=sysupdater",
+                    "--package=sysupdater"
                 ],
                 "filter": {
-                    "name": "code-insiders-updater",
+                    "name": "sysupdater",
                     "kind": "bin"
                 }
             },
@@ -25,16 +44,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'code-insiders-updater'",
+            "name": "Debug unit tests in executable 'sysupdater'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=code-insiders-updater",
-                    "--package=code-insiders-updater"
+                    "--bin=sysupdater",
+                    "--package=sysupdater"
                 ],
                 "filter": {
-                    "name": "code-insiders-updater",
+                    "name": "sysupdater",
                     "kind": "bin"
                 }
             },

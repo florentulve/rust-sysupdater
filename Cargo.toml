@@ -1,12 +1,17 @@
 [package]
 name = "sysupdater"
-version = "0.1.0"
+version = "0.1.0-1"
 authors = ["Flo <florent.ulve@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+name = "sysupdater_lib"
+path = "src/lib.rs"
+
 [dependencies]
 clap = "2.33.0"
 log = "0.4"
 env_logger = "0.7.1"
+futures-preview = { version="0.3.0-alpha.19", features = ["async-await"] }
