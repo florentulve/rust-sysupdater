@@ -1,8 +1,7 @@
 use clap::{App, Arg}; 
 use env_logger::Env;
-use std::process::{Command};
 use log::{info, error};
-use sysupdater_lib::{SysUpdater, FlatpakUpdater, CodeUpdater, cmd, SimpleUpdater, ExternalUpdater};
+use sysupdater_lib::{RustupUpdate, SysUpdate, FlatpakUpdate, CodeUpdate, download_and_update, update};
 
 
 fn main(){
@@ -37,14 +36,14 @@ fn main(){
 
     if matches.is_present("rpm"){
         info!("Updating rpm...");
-        match (SysUpdater{}.update()) {
+        match update(SysUpdate{}) {
             Ok(status) => info!("rpm updated with status {}", status),
             Err(err) => error!("rpm update failed with {}", err)
         }
     }
     if matches.is_present("flatpak"){
         info!("Updating flatpak...");
-        match (FlatpakUpdater{}.update()) {
+        match update(FlatpakUpdate{}) {
             Ok(status) => info!("flatpak updated with {}", status),
             Err(err) => error!("flatpak update failed with {}", err)
         }
@@ -53,9 +52,8 @@ fn main(){
     if matches.is_present("vscode"){
         info!("Updating vscode...");
         let rpm_pathname = "/tmp/code-insiders.rpm";
-        let code_updater = CodeUpdater::with_pathname(rpm_pathname);
-        match code_updater.download()
-                .and(code_updater.update()){
+        let code_update = CodeUpdate::with_pathname(rpm_pathname);
+        match download_and_update(code_update){
             Ok(status) => info!("vscode updated with {}", status),
             Err(err) => error!("vscode update failed with {}", err)
         }
@@ -63,7 +61,7 @@ fn main(){
 
     if matches.is_present("rustup"){
         info!("Updating rustup...");
-        match cmd!("rustup", ["update"]).status(){
+        match update(RustupUpdate{}){
             Ok(status) => info!("Rustup updated with {}", status),
             Err(err) => error!("Rustup update failed with {}", err)
         }

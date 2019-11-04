@@ -1,7 +1,7 @@
 use std::process::{Command};
 use std::string::String;
 use std::process::ExitStatus;
-use std::{io};
+use std::io;
 
 #[macro_export]
 macro_rules! cmd {
@@ -13,58 +13,79 @@ macro_rules! cmd {
     };
 }
 
-pub trait SimpleUpdater{
-    fn update(&self) -> io::Result<ExitStatus>;
+type UpdateResult = io::Result<ExitStatus>;
+
+pub trait Update{
+    fn update(&self) -> UpdateResult;
 }
 
-pub trait ExternalUpdater{
-    fn download(&self) -> io::Result<ExitStatus>;
-}
+pub trait Download{
+    fn download(&self) -> UpdateResult;}
 
-pub struct CodeUpdater{
+pub struct CodeUpdate{
     pathname: String,
 }
 
-pub struct SysUpdater{
+pub struct SysUpdate{
 }
 
-pub struct FlatpakUpdater{
+pub struct FlatpakUpdate{
 }
 
-impl CodeUpdater {
-    pub fn with_pathname(s: &str) -> CodeUpdater{
-        CodeUpdater{pathname: String::from(s)}
+pub struct RustupUpdate{
+}
+
+impl CodeUpdate {
+    pub fn with_pathname(s: &str) -> CodeUpdate{
+        CodeUpdate{pathname: String::from(s)}
     }
 }
 
-impl ExternalUpdater for CodeUpdater{
+impl Update for CodeUpdate{
 
-    fn download(&self) -> io::Result<ExitStatus>{
-        cmd!("wget", ["https://go.microsoft.com/fwlink/?LinkID=760866", "-O", &self.pathname])
-            .status()
-    }
-}
-
-impl SimpleUpdater for CodeUpdater{
-
-    fn update(&self) -> io::Result<ExitStatus>{ 
+    fn update(&self) -> UpdateResult{ 
         cmd!("sudo", ["dnf", "install", "-y", &self.pathname])
             .status()
     }
 }
 
-impl SimpleUpdater for SysUpdater{
+impl Download  for CodeUpdate{
+    fn download(&self) -> UpdateResult{
+        cmd!("wget", ["https://go.microsoft.com/fwlink/?LinkID=760866", "-O", &self.pathname])
+            .status()
+    }
+}
 
-    fn update(&self) -> io::Result<ExitStatus>{ 
+impl Update for SysUpdate{
+
+    fn update(&self) -> UpdateResult{ 
         cmd!("sudo", ["dnf", "update", "--refresh"])
             .status()
     }
 }
 
-impl SimpleUpdater for FlatpakUpdater{
+impl Update for FlatpakUpdate{
 
-    fn update(&self) -> io::Result<ExitStatus>{ 
+    fn update(&self) -> UpdateResult{ 
         cmd!("flatpak", ["update"])
             .status()
     }
+}
+
+impl Update for RustupUpdate{
+
+    fn update(&self) -> UpdateResult{ 
+        cmd!("rustup", ["update"])
+            .status()
+    }
+}
+
+
+pub fn update(u: impl Update) -> UpdateResult{
+    u.update()
+}
+
+pub fn download_and_update(u: impl Update+Download) -> UpdateResult{
+    u.download()
+        .and(u.update())
 }
